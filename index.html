@@ -1,0 +1,118 @@
+<html>
+
+<head>
+    <title> Relatório de Vistorias - VIVO </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <form id="meuFormulario">
+        <header>
+            <img src="img/vivo.svg" alt="" srcset="">
+            <h1> Relatório de Vistorias </h1>
+            <p>Data: <span id="dataAtual"></span></p>
+        </header>
+
+        <div class="input">
+            <label>Supervisor:</label> <input type="text" placeholder="Digite seu nome" required>
+        </div>
+
+        <div class="input">
+            <label>Trecho:</label> <input type="text" placeholder="Digite o trecho" required>
+        </div>
+
+        <div class="input">
+            <label>Tronco:</label> <input type="text" placeholder="Digite o tronco">
+        </div>
+
+        <div id="correcoes">
+            <div class="dadosCorrecao">
+                <select class="correcao" required>
+                    <option value="" disabled selected>Selecione uma correção</option>
+                    <option>
+                        Selagem de CS
+                    </option>
+                    <option>
+                        Construção de Sapata
+                    </option>
+                    <option>
+                        Blindagem com PEAD
+                    </option>
+                    <option>
+                        Retirada de Sobra Metálica
+                    </option>
+                    <option>
+                        Troca de Poste
+                    </option>
+                    <option>
+                        Padronizar Rede Vivo
+                    </option>
+                    <option>
+                        Alteamento de Rede
+                    </option>
+                    <option value="OUTROS">
+                        OUTROS
+                    </option>
+                </select>
+                <input type="text" class="outros" style="display: none;" />
+
+                <div class="arquivosAntes input">
+                    <label> ANTES </label>
+                    <input type="file" class="arquivosAntes1">
+                    <input type="file" class="arquivosAntes2" style="display: none">
+                </div>
+
+                <div class="arquivosDepois input">
+                    <label> DEPOIS </label>
+                    <input type="file" class="arquivosDepois1">
+                    <input type="file" class="arquivosDepois2" style="display: none">
+                </div>
+
+                <div class="text-down">
+                    <label>Endereço:</label> <input type="text">
+                </div>
+
+                <div class="text-down">
+                    <label>Ponto de Referencia:</label> <input type="text">
+                </div>
+
+                <div class="text-down">
+                    <label>Observação (opcional):</label> <textarea> </textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="addButton">
+            <button type="button" onclick="onAdicionarCorrecao()">Adicionar Correção</button>
+        </div>
+        <br>
+        <input type="submit" value="Gerar Relatório">
+    </form>
+    <script src="js/script.js"></script>
+
+
+    <!-- TEMPLATE DE RELATÓRIO PARA PDF -->
+    <div id="templateRelatorio"
+        style="display:none; width: 800px; padding: 30px; font-family: 'Roboto', sans-serif; background: white; color: #333;">
+        <div style="text-align: center; border-bottom: 2px solid #660099; padding-bottom: 10px; margin-bottom: 20px;">
+            <img src="img/vivo.png" alt="Logo VIVO" style="width: 100px;">
+            <h1 style="margin: 10px 0;">Relatório de Vistorias</h1>
+        </div>
+        <p><strong>Data:</strong> <span class="data"></span></p>
+        <p><strong>Supervisor:</strong> <span class="supervisor"></span></p>
+        <p><strong>Trecho:</strong> <span class="trecho"></span></p>
+        <p><strong>Tronco:</strong> <span class="tronco"></span></p>
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #ccc;">
+        <div class="correcoesContainer"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</body>
+
+</html>

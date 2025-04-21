@@ -1,0 +1,124 @@
+:root {
+    --primary-color: #660099;
+    --secondary-color: #050505;
+}
+
+body {
+    display: flex;
+    width: 100%;
+    height: fit-content;
+    align-items: center;
+    flex-direction: column;
+    background-color: var(--primary-color);
+    font-family: 'Roboto', sans-serif;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+h1 {
+    margin: 0;
+    margin-top: 10px;
+}
+
+p {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+img {
+    width: 100px;
+}
+
+input[type='text'], textarea {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
+input[type='file'] {
+    margin: 5px 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+button,
+input[type='submit'] {
+    margin: 10px 0;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.correcao {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.arquivosAntes, .arquivosDepois {
+    flex-direction: column;
+}
+
+.addButton {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.button {
+    padding: 2px;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.button i {
+    font-size: 40px;
+}
+
+.button:hover {
+    opacity: 0.7;
+}
+
+.outros {
+    width: 100%;
+}
+
+.input {
+    display: flex;
+    margin: 10px 0;
+    align-items: center;
+}
+
+.input label {
+    margin-right: 5px;
+}
+
+.input input {
+    width: 100%;
+}
+
+.text-down {
+    margin: 10px 0;
+}
+
+.text-down label {
+    display: block;
+}
+
+.text-down input,
+textarea {
+    width: 100%;
+}
+
+#meuFormulario {
+    width: fit-content;
+    background-color: white;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+}
