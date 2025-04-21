@@ -59,7 +59,7 @@ const hoje = new Date();
 const dataFormatada = hoje.toLocaleDateString('pt-BR');
 document.getElementById('dataAtual').textContent = dataFormatada;
 
-// Geração de PDF com template
+// Geração de PDF com uma página por bloco
 document.getElementById("meuFormulario").addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -87,43 +87,30 @@ document.getElementById("meuFormulario").addEventListener("submit", async functi
         const imagensDepois = await carregarImagens(bloco.querySelectorAll(".arquivosDepois input[type='file']"));
 
         const blocoHTML = gerarBlocoCorrecao(correcaoFinal, endereco, referencia, observacao, imagensAntes, imagensDepois);
+        container.innerHTML = "";
         container.appendChild(blocoHTML);
+
+        template.style.display = "block";
+        const canvas = await html2canvas(template, { scale: 2 });
+        const imgData = canvas.toDataURL('image/png');
+
+        const pdfWidth = 210;
+        const pdfHeight = 297;
+        const imgWidth = pdfWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        if (!window.pdf) {
+            window.pdf = new window.jspdf.jsPDF("p", "mm", "a4");
+        } else {
+            window.pdf.addPage();
+        }
+
+        window.pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        template.style.display = "none";
     }
 
-    template.style.display = "block";
-    const canvas = await html2canvas(template, { scale: 2 });
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new window.jspdf.jsPDF("p", "mm", "a4");
-
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
-
-    const ratio = pdfWidth / imgWidth;
-    const scaledHeight = imgHeight * ratio;
-
-    let position = 0;
-
-    while (position < scaledHeight) {
-        const canvasPart = document.createElement("canvas");
-        const context = canvasPart.getContext("2d");
-        const partHeight = Math.min(pdfHeight / ratio, imgHeight - (position / ratio));
-
-        canvasPart.width = imgWidth;
-        canvasPart.height = partHeight;
-
-        context.drawImage(canvas, 0, position / ratio, imgWidth, partHeight, 0, 0, imgWidth, partHeight);
-
-        const partData = canvasPart.toDataURL('image/png');
-        if (position > 0) pdf.addPage();
-        pdf.addImage(partData, 'PNG', 0, 0, pdfWidth, partHeight * ratio);
-        position += pdfHeight;
-    }
-
-    pdf.save("relatorio-vistoria.pdf");
-    template.style.display = "none";
+    window.pdf.save("relatorio-vistoria.pdf");
+    window.pdf = null;
 });
 
 async function carregarImagens(fileInputs) {
@@ -171,8 +158,8 @@ function gerarBlocoCorrecao(correcao, endereco, referencia, observacao, imagensA
     imagensAntes.forEach(src => {
         const img = document.createElement("img");
         img.src = src;
-        img.style.maxWidth = "1000px";
-        img.style.maxHeight = "1000px";
+        img.style.width = "90mm";
+        img.style.height = "auto";
         img.style.border = "1px solid #ccc";
         div.querySelector(".imagensAntes").appendChild(img);
     });
@@ -180,8 +167,8 @@ function gerarBlocoCorrecao(correcao, endereco, referencia, observacao, imagensA
     imagensDepois.forEach(src => {
         const img = document.createElement("img");
         img.src = src;
-        img.style.maxWidth = "1000px";
-        img.style.maxHeight = "1000px";
+        img.style.width = "90mm";
+        img.style.height = "auto";
         img.style.border = "1px solid #ccc";
         div.querySelector(".imagensDepois").appendChild(img);
     });
