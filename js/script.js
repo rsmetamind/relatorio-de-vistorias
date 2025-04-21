@@ -158,8 +158,8 @@ function gerarBlocoCorrecao(correcao, endereco, referencia, observacao, imagensA
     imagensAntes.forEach(src => {
         const img = document.createElement("img");
         img.src = src;
-        img.style.width = "90mm";
-        img.style.height = "auto";
+        img.style.width = "100mm";
+        img.style.height = "80mm";
         img.style.border = "1px solid #ccc";
         div.querySelector(".imagensAntes").appendChild(img);
     });
@@ -167,8 +167,8 @@ function gerarBlocoCorrecao(correcao, endereco, referencia, observacao, imagensA
     imagensDepois.forEach(src => {
         const img = document.createElement("img");
         img.src = src;
-        img.style.width = "90mm";
-        img.style.height = "auto";
+        img.style.width = "100mm";
+        img.style.height = "80mm";
         img.style.border = "1px solid #ccc";
         div.querySelector(".imagensDepois").appendChild(img);
     });
