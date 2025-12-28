@@ -82,7 +82,7 @@ document.getElementById("meuFormulario").addEventListener("submit", async functi
 
     container.innerHTML = "";
     template.querySelector(".data").textContent = document.getElementById("dataAtual").textContent;
-    template.querySelector(".supervisor").textContent = document.querySelector('input[placeholder="Digite seu nome"]').value;
+    template.querySelector(".nome").textContent = document.querySelector('input[placeholder="Digite seu nome"]').value;
     template.querySelector(".trecho").textContent = document.querySelector('input[placeholder="Digite o trecho"]').value;
     template.querySelector(".referencia-do-trecho").textContent = document.querySelector('input[placeholder="Digite a referência"]').value;
 
