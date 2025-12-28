@@ -210,20 +210,22 @@ function gerarBlocoCorrecao(correcao, endereco, referencia, observacao, imagensA
 
         <div style="margin-top: 10px;">
           <p><strong>Antes:</strong></p>
-          <div class="imagensAntes" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+          <div class="imagensAntes" style="display: flex; gap: 10px; flex-wrap: wrap; width:100%"></div>
         </div>
         
         <div style="margin-top: 10px;">
           <p><strong>Depois:</strong></p>
-          <div class="imagensDepois" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+          <div class="imagensDepois" style="display: flex; gap: 10px; flex-wrap: wrap; width:100%"></div>
         </div>
     `;
 
     imagensAntes.forEach(src => {
         const img = document.createElement("img");
         img.src = src;
-        img.style.width = "100mm";
-        img.style.height = "80mm";
+        img.style.maxWidth = "170mm";   // ocupa quase toda a largura da folha
+        img.style.maxHeight = "120mm";  // altura proporcional
+        img.style.objectFit = "contain";
+        img.style.display = "block";
         img.style.border = "1px solid #ccc";
         div.querySelector(".imagensAntes").appendChild(img);
     });
@@ -231,8 +233,10 @@ function gerarBlocoCorrecao(correcao, endereco, referencia, observacao, imagensA
     imagensDepois.forEach(src => {
         const img = document.createElement("img");
         img.src = src;
-        img.style.width = "100mm";
-        img.style.height = "80mm";
+        img.style.maxWidth = "170mm";   // ocupa quase toda a largura da folha
+        img.style.maxHeight = "120mm";  // altura proporcional
+        img.style.objectFit = "contain";
+        img.style.display = "block";
         img.style.border = "1px solid #ccc";
         div.querySelector(".imagensDepois").appendChild(img);
     });
