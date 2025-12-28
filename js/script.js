@@ -1,11 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelector(".correcao").addEventListener("change", function () {
         const inputOutros = this.closest(".dadosCorrecao").querySelector(".outros");
-        inputOutros.style.display = this.value === "OUTROS" ? "inline-block" : "none";
+        inputOutros.style.display = this.value === "OUTROS" ? "flex" : "none";
+
+        const inputMetragem = this.closest(".dadosCorrecao").querySelector(".metragem");
+        inputMetragem.style.display = isCorrecaoMetragem(this.value) ? "flex" : "none"
+
     });
 
     aplicarEventosArquivos(document.querySelector(".dadosCorrecao"));
 });
+
+function isCorrecaoMetragem(value) {
+    return value === "Aplicação de Cordoalha" ||
+        value === "Travessia Cordoalha" || 
+        value === "Retirada de Sobra Metálica" ||
+        value === "Aplicação de PEAD";
+}
 
 function onAdicionarCorrecao(e) {
     const divOriginal = document.querySelector(".dadosCorrecao");
@@ -33,7 +44,9 @@ function onAdicionarCorrecao(e) {
 
     clone.querySelector(".correcao").addEventListener("change", function () {
         const inputOutros = clone.querySelector(".outros");
-        inputOutros.style.display = this.value === "OUTROS" ? "inline-block" : "none";
+        const inputMetragem = clone.querySelector(".metragem");
+        inputOutros.style.display = this.value === "OUTROS" ? "flex" : "none";
+        inputMetragem.style.display = isCorrecaoMetragem(this.value) ? "flex" : "none"
     });
 
     document.getElementById("correcoes").appendChild(clone);
@@ -65,19 +78,35 @@ document.getElementById("meuFormulario").addEventListener("submit", async functi
 
     const template = document.getElementById("templateRelatorio");
     const container = template.querySelector(".correcoesContainer");
+    const trecho = document.querySelector('input[placeholder="Digite o trecho"]').value;
 
     container.innerHTML = "";
     template.querySelector(".data").textContent = document.getElementById("dataAtual").textContent;
     template.querySelector(".supervisor").textContent = document.querySelector('input[placeholder="Digite seu nome"]').value;
     template.querySelector(".trecho").textContent = document.querySelector('input[placeholder="Digite o trecho"]').value;
-    template.querySelector(".tronco").textContent = document.querySelector('input[placeholder="Digite o tronco"]').value;
+    template.querySelector(".referencia-do-trecho").textContent = document.querySelector('input[placeholder="Digite a referência"]').value;
 
     const blocos = document.querySelectorAll(".dadosCorrecao");
+    
+    // Crie o map fora do loop (escopo global ou da função principal)
+    const contagemCorrecoes = new Map();
 
     for (let bloco of blocos) {
+        template.querySelector(".resumoCorrecoes").style.display = "none";
         const correcao = bloco.querySelector(".correcao").value || "Não selecionada";
         const outros = bloco.querySelector(".outros").value;
+        const metragem = bloco.querySelector(".metragem > input").value;
         const correcaoFinal = correcao === "OUTROS" && outros ? outros : correcao;
+
+        // Depois de calcular correcaoFinal
+        if (contagemCorrecoes.has(correcaoFinal)) {
+            contagemCorrecoes.set(
+                correcaoFinal,
+                contagemCorrecoes.get(correcaoFinal) + 1
+            );
+        } else {
+            contagemCorrecoes.set(correcaoFinal, 1);
+        }
 
         const endereco = bloco.querySelectorAll(".text-down input")[0]?.value || "";
         const referencia = bloco.querySelectorAll(".text-down input")[1]?.value || "";
@@ -86,11 +115,11 @@ document.getElementById("meuFormulario").addEventListener("submit", async functi
         const imagensAntes = await carregarImagens(bloco.querySelectorAll(".arquivosAntes input[type='file']"));
         const imagensDepois = await carregarImagens(bloco.querySelectorAll(".arquivosDepois input[type='file']"));
 
-        const blocoHTML = gerarBlocoCorrecao(correcaoFinal, endereco, referencia, observacao, imagensAntes, imagensDepois);
+        const blocoHTML = gerarBlocoCorrecao(correcaoFinal, endereco, referencia, observacao, imagensAntes, imagensDepois, metragem);
         container.innerHTML = "";
         container.appendChild(blocoHTML);
-
         template.style.display = "block";
+
         const canvas = await html2canvas(template, { scale: 2 });
         const imgData = canvas.toDataURL('image/png');
 
@@ -108,8 +137,43 @@ document.getElementById("meuFormulario").addEventListener("submit", async functi
         window.pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
         template.style.display = "none";
     }
+    
+    template.querySelector(".correcoesContainer").innerHTML = "";
 
-    window.pdf.save("relatorio-vistoria.pdf");
+    template.style.display = "block";
+    const resumo = template.querySelector(".resumoCorrecoes");
+    resumo.style.display = "block";
+
+    const tabelaBody = template.querySelector(".tabelaCorrecoes tbody");
+    tabelaBody.innerHTML = "";
+
+    contagemCorrecoes.forEach((quantidade, tipo) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td style="border: 1px solid #ccc; padding: 8px;">${tipo}</td>
+            <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">
+                ${quantidade}
+            </td>
+        `;
+        tabelaBody.appendChild(tr);
+    });
+
+    // Página final
+    window.pdf.addPage();
+
+    const canvasResumo = await html2canvas(template, { scale: 2 });
+    const imgResumo = canvasResumo.toDataURL("image/png");
+
+    const imgWidth = 210;
+    const imgHeight = (canvasResumo.height * imgWidth) / canvasResumo.width;
+
+    window.pdf.addImage(imgResumo, "PNG", 0, 0, imgWidth, imgHeight);
+
+    // Opcional: esconder de novo
+    resumo.style.display = "none";
+    template.style.display = "none";
+
+    window.pdf.save(`${trecho}-${dataFormatada.replaceAll("/",".")}.pdf`);
     window.pdf = null;
 });
 
@@ -134,12 +198,12 @@ function fileToDataURL(file) {
     });
 }
 
-function gerarBlocoCorrecao(correcao, endereco, referencia, observacao, imagensAntes, imagensDepois) {
+function gerarBlocoCorrecao(correcao, endereco, referencia, observacao, imagensAntes, imagensDepois, metragem) {
     const div = document.createElement("div");
     div.style.marginBottom = "30px";
 
     div.innerHTML = `
-        <h3 style="color: #660099;">Correção: ${correcao}</h3>
+        <h3 style="color: #660099;">Correção: ${correcao}${metragem ? " - " + metragem : ""}</h3>
         <p><strong>Endereço:</strong> ${endereco}</p>
         <p><strong>Ponto de Referência:</strong> ${referencia}</p>
         ${observacao ? `<p><strong>Observação:</strong> ${observacao}</p>` : ""}
